@@ -16,9 +16,8 @@ public class UserSpecificationsBuilder {
         params = new ArrayList<SearchCriteria>();
     }
 
-    public UserSpecificationsBuilder with(String key, String operation, Object value) {
+    public void with(String key, String operation, Object value) {
         params.add(new SearchCriteria(key, operation, value));
-        return this;
     }
 
     public Specification<User> build() {
@@ -26,19 +25,19 @@ public class UserSpecificationsBuilder {
             return null;
         }
 
-        List<Specification> specs = params.stream()
+        List<Specification> specifications = params.stream()
                 .map(UserSpecification::new)
                 .collect(Collectors.toList());
 
-        Specification result = specs.get(0);
+        Specification result = specifications.get(0);
 
         for (int i = 1; i < params.size(); i++) {
             result = params.get(i)
                     .isOrPredicate()
                     ? Specification.where(result)
-                    .or(specs.get(i))
+                    .or(specifications.get(i))
                     : Specification.where(result)
-                    .and(specs.get(i));
+                    .and(specifications.get(i));
         }
         return result;
     }
